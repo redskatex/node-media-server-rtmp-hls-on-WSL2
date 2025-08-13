@@ -8,10 +8,20 @@
     "start": "node server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "RedSkatex",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^17.2.1",
+    "ffmpeg": "^0.0.4",
     "node-media-server": "^4.0.21"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redskatex/node-media-server-rtmp-hls-on-WSL2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/redskatex/node-media-server-rtmp-hls-on-WSL2/issues"
+  },
+  "homepage": "https://github.com/redskatex/node-media-server-rtmp-hls-on-WSL2#readme"
 }
