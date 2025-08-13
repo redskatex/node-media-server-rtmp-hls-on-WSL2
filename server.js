@@ -17,17 +17,18 @@ const ffmpegPath = '/usr/bin/ffmpeg';
 
 const config = {
   rtmp: {
-    port: 1935,
+    port: process.env.RTMP_PORT,
     chunk_size: 4096,
     gop_cache: true,
     ping: 5,
     ping_timeout: 10,
-    host: '0.0.0.0'
+    host: process.env.HOST
   },
   http: {
-    port: 8000,
+    port: process.env.HTTP_PORT,
     mediaroot: path.join(__dirname, 'media'),
-    allow_origin: '*'
+    allow_origin: '*',
+    host: process.env.HOST
   },
   trans: {
     ffmpeg: ffmpegPath,
@@ -55,4 +56,3 @@ nms.on('donePublish', (id, StreamPath, args) => {
 });
 
 nms.run();
-//test
