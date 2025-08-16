@@ -3,44 +3,60 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
-const PORT = 3000; // Porta web
+const WEB_PORT = process.env.WEB_PORT || 3000;
 
-// Servire file statici
+// Servire file statici nella cartella "public"
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.listen(PORT, process.env.HOST,() => {
-  console.log(`Pagina web attiva su http://localhost:${PORT}`);
+app.listen(WEB_PORT, () => {
+  console.log(`🌐 Pagina web attiva su http://localhost:${WEB_PORT}`);
 });
 
+// Configurazione NodeMediaServer
 const config = {
+  logType: 3,
   http: {
     port: process.env.HTTP_PORT || 8000,
-    mediaroot: '/media',
+    mediaroot: path.join(__dirname, 'media'),
     allow_origin: '*',
-    host: process.env.HOST
   },
   rtmp: {
     port: process.env.RTMP_PORT || 1935,
-    chunk_size: 4096,
+    chunk_size: 60000,
     gop_cache: true,
-    ping: 5,
-    ping_timeout: 10,
-    host: process.env.HOST
+    ping: 30,
+    ping_timeout: 60,
+    host: '0.0.0.0', 
+  },
+  trans: {
+    ffmpeg: '/usr/bin/ffmpeg',
+    tasks: [
+      {
+        app: 'live',
+        hls: true,
+        hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
+        dash: true,
+        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+      }
+    ]
   }
 };
 
 const nms = new NodeMediaServer(config);
 
-/*
+// Eventi RTMP
 nms.on('prePublish', (id, StreamPath, args) => {
-  console.log('[NodeMediaServer] prePublish', id, StreamPath, args);
+  console.log(`🔴 prePublish - id: ${id}, path: ${StreamPath}`);
 });
-nms.on('postPublish', (id, StreamPath, args) => {
-  console.log('[NodeMediaServer] postPublish', id, StreamPath, args);
-});
-nms.on('donePublish', (id, StreamPath, args) => {
-  console.log('[NodeMediaServer] donePublish', id, StreamPath, args);
-});
-*/
 
+nms.on('postPublish', (id, StreamPath, args) => {
+  console.log(`🟢 postPublish - id: ${id}, path: ${StreamPath}`);
+});
+
+nms.on('donePublish', (id, StreamPath, args) => {
+  console.log(`⚪ donePublish - id: ${id}, path: ${StreamPath}`);
+});
+
+// Avvio del server
 nms.run();
+console.log('🎥 NodeMediaServer in esecuzione...');
